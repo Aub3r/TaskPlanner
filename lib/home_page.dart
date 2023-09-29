@@ -1,24 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import './add_task.dart';
+import 'add_task_page.dart';
 import './todo_filter.dart';
+import './api.dart';
+import './todo_task.dart';
 
-class TodoTask {
-  String taskName;
-  bool isDone;
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
-  TodoTask(this.taskName) : isDone = false;
+  @override
+  _HomePageState createState() => _HomePageState();
 }
 
-class TodoList extends StatelessWidget {
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    _loadTasks();
+  }
+
+  Future<void> _loadTasks() async {
+    try {
+      await register();
+      List<TodoTask> tasks = await fetchTasks();
+      Provider.of<TodoListModel>(context, listen: false).loadTasks(tasks);
+    } catch (e) {
+      print("Error loading tasks: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("To-Do List"),
+        title: const Text(
+          "TaskHandler",
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.green,
         actions: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(right: 23.0),
+            padding: const EdgeInsets.only(right: 10.0),
             child: PopupMenuButton<TaskFilter>(
               onSelected: (filter) {
                 Provider.of<TodoListModel>(context, listen: false).filter =
@@ -43,22 +70,26 @@ class TodoList extends StatelessWidget {
           ),
         ],
       ),
+      backgroundColor: Colors.green[100],
       body: Consumer<TodoListModel>(
         builder: (context, model, child) {
-          return ListView.builder(
-            itemBuilder: (context, index) {
-              return _item(context, model.tasks[index]);
-            },
-            itemCount: model.tasks.length,
+          return Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                return _item(context, model.tasks[index]);
+              },
+              itemCount: model.tasks.length,
+            ),
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddTask(
+              builder: (context) => AddTaskPage(
                 onTaskAdded: (taskName) {
                   Provider.of<TodoListModel>(context, listen: false)
                       .addTask(taskName);
@@ -67,7 +98,9 @@ class TodoList extends StatelessWidget {
             ),
           );
         },
-        child: const Icon(Icons.add),
+        label: const Text('Add Task'),
+        icon: const Icon(Icons.add),
+        backgroundColor: Colors.green,
       ),
     );
   }
@@ -78,6 +111,7 @@ class TodoList extends StatelessWidget {
       child: ListTile(
         leading: Checkbox(
           value: task.isDone,
+          activeColor: Colors.green,
           onChanged: (bool? value) {
             if (value != null) {
               Provider.of<TodoListModel>(context, listen: false)
