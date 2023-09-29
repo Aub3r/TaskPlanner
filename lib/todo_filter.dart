@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'todo_list.dart';
+import './api.dart';
+import './todo_task.dart';
 
 enum TaskFilter { all, done, undone }
 
 class TodoListModel extends ChangeNotifier {
-  final List<TodoTask> _tasks = [];
+  List<TodoTask> _tasks = [];
   TaskFilter _filter = TaskFilter.all;
 
   List<TodoTask> get tasks {
@@ -23,18 +24,39 @@ class TodoListModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addTask(String taskName) {
-    _tasks.add(TodoTask(taskName));
+  void loadTasks(List<TodoTask> tasks) {
+    _tasks = tasks;
     notifyListeners();
   }
 
-  void toggleDone(TodoTask task) {
-    task.isDone = !task.isDone;
-    notifyListeners();
+  Future<void> addTask(String taskName) async {
+    try {
+      TodoTask newTask = TodoTask(taskName);
+      List<TodoTask> updatedTasks = await addTaskToApi(newTask);
+      _tasks = updatedTasks;
+      notifyListeners();
+    } catch (e) {
+      print("Error adding task: $e");
+    }
   }
 
-  void removeTask(TodoTask task) {
-    _tasks.remove(task);
-    notifyListeners();
+  Future<void> toggleDone(TodoTask task) async {
+    try {
+      task.isDone = !task.isDone;
+      await updateTask(task);
+      notifyListeners();
+    } catch (e) {
+      print("Error toggling task: $e");
+    }
+  }
+
+  Future<void> removeTask(TodoTask task) async {
+    try {
+      await deleteTask(task.id);
+      _tasks.remove(task);
+      notifyListeners();
+    } catch (e) {
+      print("Error removing task: $e");
+    }
   }
 }
