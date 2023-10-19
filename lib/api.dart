@@ -5,7 +5,7 @@ import './todo_task.dart';
 String? apiKey = '70cddc86-c3f8-48bc-aa9e-f895a7464b59';
 
 Future<void> register() async {
-  if (apiKey != null) {
+  if (apiKey != null || apiKey != '70cddc86-c3f8-48bc-aa9e-f895a7464b59') {
     return;
   }
 

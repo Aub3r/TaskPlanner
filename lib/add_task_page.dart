@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 class AddTaskPage extends StatelessWidget {
   final TextEditingController _controller = TextEditingController();
-  final Function(String) onTaskAdded;
 
-  AddTaskPage({super.key, required this.onTaskAdded});
+  AddTaskPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +45,7 @@ class AddTaskPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 if (_controller.text.isNotEmpty) {
-                  onTaskAdded(_controller.text);
-                  Navigator.pop(context);
+                  Navigator.pop(context, _controller.text);
                 }
               },
               style: ElevatedButton.styleFrom(

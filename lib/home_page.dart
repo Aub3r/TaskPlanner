@@ -78,18 +78,17 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final taskName = await Navigator.push<String>(
             context,
             MaterialPageRoute(
-              builder: (context) => AddTaskPage(
-                onTaskAdded: (taskName) {
-                  Provider.of<TodoListModel>(context, listen: false)
-                      .addTask(taskName);
-                },
-              ),
+              builder: (context) => AddTaskPage(),
             ),
           );
+          if (taskName != null) {
+            Provider.of<TodoListModel>(context, listen: false)
+                .addTask(taskName);
+          }
         },
         label: const Text('Add Task'),
         icon: const Icon(Icons.add),
