@@ -24,9 +24,14 @@ class TodoListModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void loadTasks(List<TodoTask> tasks) {
-    _tasks = tasks;
-    notifyListeners();
+  Future<void> loadTasks() async {
+    try {
+      List<TodoTask> tasks = await fetchTasks();
+      _tasks = tasks;
+      notifyListeners();
+    } catch (e) {
+      print("Error loading tasks: $e");
+    }
   }
 
   Future<void> addTask(String taskName) async {
@@ -41,12 +46,15 @@ class TodoListModel extends ChangeNotifier {
   }
 
   Future<void> toggleDone(TodoTask task) async {
+    bool originalStatus = task.isDone;
+    task.isDone = !task.isDone;
     try {
-      task.isDone = !task.isDone;
       await updateTask(task);
       notifyListeners();
     } catch (e) {
       print("Error toggling task: $e");
+      task.isDone = originalStatus; // revert the change if API call fails
+      notifyListeners();
     }
   }
 
