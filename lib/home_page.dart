@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'add_task_page.dart';
 import './todo_filter.dart';
-import './api.dart';
 import './todo_task.dart';
 
 class HomePage extends StatefulWidget {
@@ -20,13 +19,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadTasks() async {
-    try {
-      await register();
-      List<TodoTask> tasks = await fetchTasks();
-      Provider.of<TodoListModel>(context, listen: false).loadTasks(tasks);
-    } catch (e) {
-      print("Error loading tasks: $e");
-    }
+    Provider.of<TodoListModel>(context, listen: false).loadTasks();
   }
 
   @override

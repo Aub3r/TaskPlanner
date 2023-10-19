@@ -2,16 +2,17 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import './todo_task.dart';
 
-String? apiKey = 'a3dc35d8-d594-4bde-9a8a-a140e9bf8d4e';
+String? apiKey = '70cddc86-c3f8-48bc-aa9e-f895a7464b59';
 
 Future<void> register() async {
-  if (apiKey != null && apiKey!.isNotEmpty) {
+  if (apiKey != null) {
     return;
   }
 
   final response =
       await http.get(Uri.parse('https://todoapp-api.apps.k8s.gu.se/register'));
   if (response.statusCode == 200) {
+    print("Registered API Key: ${response.body}");
     apiKey = response.body;
   } else {
     throw Exception('Failed to register and get API key');
@@ -22,6 +23,7 @@ Future<List<TodoTask>> fetchTasks() async {
   final response = await http
       .get(Uri.parse('https://todoapp-api.apps.k8s.gu.se/todos?key=$apiKey'));
   if (response.statusCode == 200) {
+    print(response.body);
     List<dynamic> data = json.decode(response.body);
     return data.map((task) => TodoTask.fromJson(task)).toList();
   } else {
