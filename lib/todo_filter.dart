@@ -53,7 +53,7 @@ class TodoListModel extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print("Error toggling task: $e");
-      task.isDone = originalStatus; // revert the change if API call fails
+      task.isDone = originalStatus;
       notifyListeners();
     }
   }
